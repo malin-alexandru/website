@@ -1,12 +1,42 @@
 const ANAF_API_URL = "https://webservicesp.anaf.ro/api/PlatitorTvaRest/v9/tva";
 
-function todayInRomania() {
-  return new Intl.DateTimeFormat("en-CA", {
+function getTodayPartsInRomania() {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Europe/Bucharest",
     year: "numeric",
     month: "2-digit",
     day: "2-digit"
-  }).format(new Date());
+  });
+
+  const parts = formatter.formatToParts(new Date());
+
+  return {
+    year: Number(parts.find((part) => part.type === "year")?.value),
+    month: Number(parts.find((part) => part.type === "month")?.value),
+    day: Number(parts.find((part) => part.type === "day")?.value)
+  };
+}
+
+function formatDateParts(year, month, day) {
+  const yyyy = String(year);
+  const mm = String(month).padStart(2, "0");
+  const dd = String(day).padStart(2, "0");
+
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function buildQueryDate(yearOverride) {
+  const today = getTodayPartsInRomania();
+  const selectedYear = Number(yearOverride) || today.year;
+
+  if (selectedYear < today.year) {
+    return formatDateParts(selectedYear, 12, 31);
+  }
+
+  const lastDayOfMonth = new Date(Date.UTC(selectedYear, today.month, 0)).getUTCDate();
+  const safeDay = Math.min(today.day, lastDayOfMonth);
+
+  return formatDateParts(selectedYear, today.month, safeDay);
 }
 
 function normalizeValue(value) {
@@ -48,20 +78,48 @@ function buildCounty(record) {
   );
 }
 
-function mapAnafRecord(record, requestedCui) {
+function parseIsoDate(value) {
+  const normalized = normalizeValue(value);
+
+  if (!normalized || !/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
+    return null;
+  }
+
+  const parsed = new Date(`${normalized}T00:00:00Z`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function mapAnafRecord(record, requestedCui, requestedDate) {
   const general = record.date_generale || {};
+  const vat = record.inregistrare_scop_Tva || {};
+  const vatCash = record.inregistrare_RTVAI || {};
+  const inactive = record.stare_inactiv || {};
+  const splitTva = record.inregistrare_SplitTVA || {};
 
   return {
     found: true,
     cui: normalizeValue(general.cui) || String(requestedCui),
     companyName: normalizeValue(general.denumire),
+    ownerName: null,
     phone: normalizeValue(general.telefon),
     address: buildAddress(record),
     county: buildCounty(record),
     registrationStatus: normalizeValue(general.stare_inregistrare),
+    registrationNumber: normalizeValue(general.nrRegCom),
+    registrationDate: normalizeValue(general.data_inregistrare),
     caen: normalizeValue(general.cod_CAEN),
+    legalForm: normalizeValue(general.forma_juridica),
+    organizationForm: normalizeValue(general.forma_organizare),
+    ownershipForm: normalizeValue(general.forma_de_proprietate),
+    taxOffice: normalizeValue(general.organFiscalCompetent),
+    authorizationAct: normalizeValue(general.act),
+    iban: normalizeValue(general.iban),
+    vatPayer: Boolean(vat.scpTVA),
+    vatAtCollection: Boolean(vatCash.statusTvaIncasare),
+    inactive: Boolean(inactive.statusInactivi),
+    splitTva: Boolean(splitTva.statusSplitTVA),
     eFactura: Boolean(general.statusRO_e_Factura),
-    queriedAt: normalizeValue(general.data) || todayInRomania()
+    queriedAt: normalizeValue(general.data) || requestedDate
   };
 }
 
@@ -122,6 +180,8 @@ module.exports = async function handler(req, res) {
   const body = await readJsonBody(req);
   const rawCui = normalizeValue(body?.cui);
   const cui = rawCui ? rawCui.replace(/\D/g, "") : "";
+  const rawYear = normalizeValue(body?.year);
+  const year = rawYear ? rawYear.replace(/\D/g, "") : "";
 
   if (!cui) {
     return res.status(400).json({
@@ -129,10 +189,21 @@ module.exports = async function handler(req, res) {
     });
   }
 
+  const currentYear = getTodayPartsInRomania().year;
+  const selectedYear = year ? Number(year) : currentYear;
+
+  if (!Number.isInteger(selectedYear) || selectedYear < 2000 || selectedYear > currentYear) {
+    return res.status(400).json({
+      error: "Trimite un an valid intre 2000 si anul curent."
+    });
+  }
+
+  const queryDate = buildQueryDate(selectedYear);
+
   const payload = [
     {
       cui: Number(cui),
-      data: todayInRomania()
+      data: queryDate
     }
   ];
 
@@ -178,7 +249,19 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    return res.status(200).json(mapAnafRecord(foundRecord, cui));
+    const registrationDate = parseIsoDate(foundRecord.date_generale?.data_inregistrare);
+    const requestedDate = parseIsoDate(queryDate);
+
+    if (registrationDate && requestedDate && registrationDate > requestedDate) {
+      return res.status(200).json({
+        found: false,
+        cui,
+        queriedAt: queryDate,
+        error: "Compania nu era inregistrata la data selectata."
+      });
+    }
+
+    return res.status(200).json(mapAnafRecord(foundRecord, cui, queryDate));
   } catch (error) {
     return res.status(502).json({
       error: "Interogarea ANAF a esuat.",

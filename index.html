@@ -148,36 +148,6 @@
         gap: 20px;
       }
 
-      .hero {
-        display: grid;
-        gap: 10px;
-      }
-
-      .eyebrow {
-        display: inline-flex;
-        width: fit-content;
-        padding: 8px 14px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.48);
-        color: var(--accent-dark);
-        font-size: 0.92rem;
-        font-weight: 600;
-        letter-spacing: 0.01em;
-      }
-
-      .hero h1 {
-        font-size: clamp(2rem, 4vw, 3.4rem);
-        line-height: 1.02;
-        max-width: 10ch;
-      }
-
-      .hero p {
-        max-width: 42ch;
-        color: var(--text-soft);
-        font-size: 1rem;
-        line-height: 1.6;
-      }
-
       .lookup-card,
       .result-card {
         border: 1px solid var(--card-border);
@@ -218,7 +188,8 @@
         align-items: stretch;
       }
 
-      .lookup-form input {
+      .lookup-form input,
+      .lookup-form select {
         flex: 1;
         min-width: 0;
         padding: 15px 16px;
@@ -230,7 +201,13 @@
         outline: none;
       }
 
-      .lookup-form input:focus {
+      .lookup-form select {
+        flex: 0 0 140px;
+        cursor: pointer;
+      }
+
+      .lookup-form input:focus,
+      .lookup-form select:focus {
         border-color: rgba(16, 88, 173, 0.55);
         box-shadow: 0 0 0 4px rgba(16, 88, 173, 0.12);
       }
@@ -250,11 +227,6 @@
       .lookup-form button:disabled {
         cursor: wait;
         opacity: 0.75;
-      }
-
-      .helper-text {
-        color: var(--text-soft);
-        font-size: 0.92rem;
       }
 
       .status {
@@ -425,21 +397,12 @@
 
       <div class="layout">
         <section class="panel" aria-label="Verificare companie dupa CUI">
-          <header class="hero">
-            <span class="eyebrow">Verificare rapida ANAF</span>
-            <h1>Date firma din ziua curenta</h1>
-            <p>
-              Introdu un CUI si afiseaza instant cateva informatii utile despre
-              companie, folosind registrul ANAF pentru data de astazi.
-            </p>
-          </header>
-
           <section class="lookup-card">
             <div>
               <h2>Cauta dupa CUI</h2>
               <p>
-                Sunt afisate doar datele esentiale: denumire, telefon, adresa,
-                stare, cod CAEN si statut RO e-Factura.
+                Daca o informatie lipseste acum, o poti verifica rapid si in
+                anii anteriori.
               </p>
             </div>
 
@@ -456,12 +419,10 @@
                   placeholder="Exemplu: 12345678"
                   aria-describedby="helper-text status-box"
                 />
+                <select id="year-select" name="year" aria-label="An raport ANAF">
+                </select>
                 <button type="submit" id="lookup-button">Cauta</button>
               </div>
-
-              <p class="helper-text" id="helper-text">
-                Este trimis un singur CUI per cerere, folosind data curenta.
-              </p>
 
               <div class="status" id="status-box" aria-live="polite"></div>
             </form>
@@ -477,6 +438,10 @@
             </div>
 
             <div class="info-grid">
+              <article class="info-item">
+                <span class="label">Administrator</span>
+                <span class="value" id="company-owner">Nu este disponibil in raspunsul ANAF</span>
+              </article>
               <article class="info-item">
                 <span class="label">Telefon</span>
                 <span class="value" id="company-phone">-</span>
@@ -498,6 +463,54 @@
                 <span class="value" id="company-caen">-</span>
               </article>
               <article class="info-item">
+                <span class="label">Nr. Registrul Comertului</span>
+                <span class="value" id="company-registration-number">-</span>
+              </article>
+              <article class="info-item">
+                <span class="label">Data inregistrarii</span>
+                <span class="value" id="company-registration-date">-</span>
+              </article>
+              <article class="info-item">
+                <span class="label">Forma juridica</span>
+                <span class="value" id="company-legal-form">-</span>
+              </article>
+              <article class="info-item">
+                <span class="label">Forma organizare</span>
+                <span class="value" id="company-organization-form">-</span>
+              </article>
+              <article class="info-item">
+                <span class="label">Forma de proprietate</span>
+                <span class="value" id="company-ownership-form">-</span>
+              </article>
+              <article class="info-item">
+                <span class="label">Organ fiscal</span>
+                <span class="value" id="company-tax-office">-</span>
+              </article>
+              <article class="info-item">
+                <span class="label">Act autorizare</span>
+                <span class="value" id="company-authorization-act">-</span>
+              </article>
+              <article class="info-item">
+                <span class="label">IBAN</span>
+                <span class="value" id="company-iban">-</span>
+              </article>
+              <article class="info-item">
+                <span class="label">Platitor TVA</span>
+                <span class="value" id="company-vat-payer">-</span>
+              </article>
+              <article class="info-item">
+                <span class="label">TVA la incasare</span>
+                <span class="value" id="company-vat-cash">-</span>
+              </article>
+              <article class="info-item">
+                <span class="label">Contribuabil inactiv</span>
+                <span class="value" id="company-inactive">-</span>
+              </article>
+              <article class="info-item">
+                <span class="label">Split TVA</span>
+                <span class="value" id="company-split-tva">-</span>
+              </article>
+              <article class="info-item">
                 <span class="label">Data interogarii</span>
                 <span class="value" id="company-date">-</span>
               </article>
@@ -515,18 +528,34 @@
       const apiUrl = document.documentElement.dataset.anafApiUrl || "";
       const form = document.getElementById("lookup-form");
       const input = document.getElementById("cui-input");
+      const yearSelect = document.getElementById("year-select");
       const button = document.getElementById("lookup-button");
       const statusBox = document.getElementById("status-box");
       const resultCard = document.getElementById("result-card");
+      const currentYear = new Date().getFullYear();
+      const oldestYear = currentYear - 15;
 
       const resultFields = {
         companyName: document.getElementById("company-name"),
         companyMeta: document.getElementById("company-meta"),
+        owner: document.getElementById("company-owner"),
         phone: document.getElementById("company-phone"),
         address: document.getElementById("company-address"),
         county: document.getElementById("company-county"),
         status: document.getElementById("company-status"),
         caen: document.getElementById("company-caen"),
+        registrationNumber: document.getElementById("company-registration-number"),
+        registrationDate: document.getElementById("company-registration-date"),
+        legalForm: document.getElementById("company-legal-form"),
+        organizationForm: document.getElementById("company-organization-form"),
+        ownershipForm: document.getElementById("company-ownership-form"),
+        taxOffice: document.getElementById("company-tax-office"),
+        authorizationAct: document.getElementById("company-authorization-act"),
+        iban: document.getElementById("company-iban"),
+        vatPayer: document.getElementById("company-vat-payer"),
+        vatCash: document.getElementById("company-vat-cash"),
+        inactive: document.getElementById("company-inactive"),
+        splitTva: document.getElementById("company-split-tva"),
         date: document.getElementById("company-date"),
         eFactura: document.getElementById("e-factura-pill")
       };
@@ -534,6 +563,20 @@
       function setStatus(message, tone) {
         statusBox.textContent = message || "";
         statusBox.dataset.tone = tone || "";
+      }
+
+      function populateYearOptions() {
+        for (let year = currentYear; year >= oldestYear; year -= 1) {
+          const option = document.createElement("option");
+          option.value = String(year);
+          option.textContent = String(year);
+
+          if (year === currentYear) {
+            option.selected = true;
+          }
+
+          yearSelect.appendChild(option);
+        }
       }
 
       function clearStatus() {
@@ -550,20 +593,41 @@
         resultCard.dataset.visible = "false";
       }
 
+      function formatValue(value, fallback) {
+        return value || fallback || "Nu este disponibil";
+      }
+
+      function formatBoolean(value) {
+        return value ? "Da" : "Nu";
+      }
+
       function showResult(data) {
         resultFields.companyName.textContent = data.companyName || "Companie negasita";
         resultFields.companyMeta.textContent = "CUI " + data.cui + " | Actualizat pentru " + (data.queriedAt || "-");
-        resultFields.phone.textContent = data.phone || "Nu este disponibil";
-        resultFields.address.textContent = data.address || "Nu este disponibila";
-        resultFields.county.textContent = data.county || "Nu este disponibil";
-        resultFields.status.textContent = data.registrationStatus || "Nu este disponibila";
-        resultFields.caen.textContent = data.caen || "Nu este disponibil";
+        resultFields.owner.textContent = formatValue(data.ownerName, "Nu este disponibil in raspunsul ANAF");
+        resultFields.phone.textContent = formatValue(data.phone);
+        resultFields.address.textContent = formatValue(data.address, "Nu este disponibila");
+        resultFields.county.textContent = formatValue(data.county);
+        resultFields.status.textContent = formatValue(data.registrationStatus, "Nu este disponibila");
+        resultFields.caen.textContent = formatValue(data.caen);
+        resultFields.registrationNumber.textContent = formatValue(data.registrationNumber);
+        resultFields.registrationDate.textContent = formatValue(data.registrationDate);
+        resultFields.legalForm.textContent = formatValue(data.legalForm);
+        resultFields.organizationForm.textContent = formatValue(data.organizationForm);
+        resultFields.ownershipForm.textContent = formatValue(data.ownershipForm);
+        resultFields.taxOffice.textContent = formatValue(data.taxOffice);
+        resultFields.authorizationAct.textContent = formatValue(data.authorizationAct);
+        resultFields.iban.textContent = formatValue(data.iban);
+        resultFields.vatPayer.textContent = formatBoolean(data.vatPayer);
+        resultFields.vatCash.textContent = formatBoolean(data.vatAtCollection);
+        resultFields.inactive.textContent = formatBoolean(data.inactive);
+        resultFields.splitTva.textContent = formatBoolean(data.splitTva);
         resultFields.date.textContent = data.queriedAt || "-";
         resultFields.eFactura.textContent = data.eFactura ? "RO e-Factura activ" : "RO e-Factura inactiv";
         resultCard.dataset.visible = "true";
       }
 
-      async function fetchCompanyData(cui) {
+      async function fetchCompanyData(cui, year) {
         if (!apiUrl || apiUrl.includes("your-vercel-project")) {
           throw new Error("Configureaza mai intai URL-ul functiei Vercel in atributul data-anaf-api-url din tagul html.");
         }
@@ -573,7 +637,7 @@
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ cui })
+          body: JSON.stringify({ cui, year })
         });
 
         const payload = await response.json().catch(function () {
@@ -587,10 +651,13 @@
         return payload;
       }
 
+      populateYearOptions();
+
       form.addEventListener("submit", async function (event) {
         event.preventDefault();
 
         const cui = input.value.replace(/\D/g, "");
+        const selectedYear = yearSelect.value;
         input.value = cui;
         hideResult();
 
@@ -601,14 +668,14 @@
         }
 
         clearStatus();
-        setStatus("Se interogheaza ANAF pentru data curenta...", "info");
+        setStatus("Se interogheaza ANAF pentru anul selectat...", "info");
         setLoading(true);
 
         try {
-          const data = await fetchCompanyData(cui);
+          const data = await fetchCompanyData(cui, selectedYear);
 
           if (!data.found) {
-            setStatus("Nu a fost gasita nicio companie pentru acest CUI.", "error");
+            setStatus("La data selectata nu a fost gasita nicio companie pentru acest CUI.", "error");
             return;
           }
 
