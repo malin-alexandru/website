@@ -1,6 +1,0 @@
-1:"$Sreact.fragment"
-2:I[97367,["/website/_next/static/chunks/0dbhjjzl8qfwv.js"],"OutletBoundary"]
-3:"$Sreact.suspense"
-:HL["/website/20771654_x0w5_eydt_210607.svg","image"]
-0:{"rsc":["$","$1","c",{"children":[["$","main",null,{"className":"scene","aria-label":"Copac pe fundal de cer","children":[["$","div",null,{"className":"cloud cloud--one"}],["$","div",null,{"className":"cloud cloud--two"}],["$","div",null,{"className":"cloud cloud--three"}],["$","img",null,{"className":"tree","src":"/website/20771654_x0w5_eydt_210607.svg","alt":"Copac"}]]}],null,["$","$L2",null,{"children":["$","$3",null,{"name":"Next.MetadataOutlet","children":"$@4"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"dDTYYMhoIqjCGDue-SNZW"}
-4:null
