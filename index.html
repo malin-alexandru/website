@@ -320,6 +320,37 @@
         word-break: break-word;
       }
 
+      .phone-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .phone-row .value {
+        flex: 1;
+      }
+
+      .call-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 34px;
+        padding: 0 12px;
+        border-radius: 999px;
+        background: rgba(16, 88, 173, 0.12);
+        color: var(--accent-dark);
+        font-size: 0.88rem;
+        font-weight: 700;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .call-button[aria-disabled="true"] {
+        pointer-events: none;
+        opacity: 0.55;
+      }
+
       .tree-wrap {
         display: flex;
         justify-content: center;
@@ -439,12 +470,18 @@
 
             <div class="info-grid">
               <article class="info-item">
-                <span class="label">Administrator</span>
-                <span class="value" id="company-owner">Nu este disponibil in raspunsul ANAF</span>
-              </article>
-              <article class="info-item">
                 <span class="label">Telefon</span>
-                <span class="value" id="company-phone">-</span>
+                <div class="phone-row">
+                  <span class="value" id="company-phone">-</span>
+                  <a
+                    class="call-button"
+                    id="company-phone-call"
+                    href="#"
+                    aria-disabled="true"
+                  >
+                    Call
+                  </a>
+                </div>
               </article>
               <article class="info-item">
                 <span class="label">Adresa</span>
@@ -538,8 +575,8 @@
       const resultFields = {
         companyName: document.getElementById("company-name"),
         companyMeta: document.getElementById("company-meta"),
-        owner: document.getElementById("company-owner"),
         phone: document.getElementById("company-phone"),
+        phoneCall: document.getElementById("company-phone-call"),
         address: document.getElementById("company-address"),
         county: document.getElementById("company-county"),
         status: document.getElementById("company-status"),
@@ -601,11 +638,20 @@
         return value ? "Da" : "Nu";
       }
 
+      function getCallablePhone(phone) {
+        const normalized = (phone || "").replace(/[^\d+]/g, "");
+        return normalized.length >= 6 ? normalized : "";
+      }
+
       function showResult(data) {
+        const phoneValue = formatValue(data.phone);
+        const callablePhone = getCallablePhone(data.phone);
+
         resultFields.companyName.textContent = data.companyName || "Companie negasita";
         resultFields.companyMeta.textContent = "CUI " + data.cui + " | Actualizat pentru " + (data.queriedAt || "-");
-        resultFields.owner.textContent = formatValue(data.ownerName, "Nu este disponibil in raspunsul ANAF");
-        resultFields.phone.textContent = formatValue(data.phone);
+        resultFields.phone.textContent = phoneValue;
+        resultFields.phoneCall.href = callablePhone ? "tel:" + callablePhone : "#";
+        resultFields.phoneCall.setAttribute("aria-disabled", callablePhone ? "false" : "true");
         resultFields.address.textContent = formatValue(data.address, "Nu este disponibila");
         resultFields.county.textContent = formatValue(data.county);
         resultFields.status.textContent = formatValue(data.registrationStatus, "Nu este disponibila");
