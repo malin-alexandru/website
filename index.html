@@ -1,28 +1,53 @@
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="ro" data-anaf-api-url="https://website-psi-flax-29.vercel.app/api/anaf">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Malin Alexandru</title>
-    <meta name="description" content="Malin Alexandru construieste experiente digitale elegante si solutii software personalizate, transformand idei curajoase in produse memorabile." />
+    <meta
+      name="description"
+      content="Malin Alexandru construieste experiente digitale elegante si solutii software personalizate, transformand idei curajoase in produse memorabile."
+    />
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
-      html, body { width: 100%; min-height: 100%; }
+
+      :root {
+        color-scheme: light;
+        --page-bg:
+          radial-gradient(circle at 50% 6%, rgba(255, 255, 255, 0.75), transparent 42%),
+          linear-gradient(180deg, #94d5ff 0%, #6eb9f2 45%, #3f84c8 100%);
+        --card-bg: rgba(255, 255, 255, 0.86);
+        --card-border: rgba(255, 255, 255, 0.42);
+        --text-main: #12385f;
+        --text-soft: #3c648d;
+        --accent: #1058ad;
+        --accent-dark: #0a478d;
+        --status-bg: rgba(16, 88, 173, 0.08);
+        --shadow: 0 22px 48px rgba(8, 43, 83, 0.18);
+      }
+
+      html, body {
+        width: 100%;
+        min-height: 100%;
+        font-family: Inter, "Segoe UI", Roboto, sans-serif;
+      }
+
       body {
         min-height: 100dvh;
-        overflow: hidden;
+        overflow-x: hidden;
+        color: var(--text-main);
+        background: #6eb9f2;
       }
+
       .scene {
         position: relative;
         width: 100%;
         min-height: 100dvh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background:
-          radial-gradient(circle at 50% 6%, rgba(255, 255, 255, 0.75), transparent 42%),
-          linear-gradient(180deg, #94d5ff 0%, #6eb9f2 45%, #3f84c8 100%);
+        padding: 32px 24px;
+        overflow: hidden;
+        background: var(--page-bg);
       }
+
       .cloud {
         position: absolute;
         border-radius: 999px;
@@ -30,74 +55,571 @@
         filter: blur(1px);
         animation: drift 26s linear infinite;
       }
-      .cloud::before, .cloud::after {
+
+      .cloud::before,
+      .cloud::after {
         content: "";
         position: absolute;
         border-radius: 999px;
         background: rgba(255, 255, 255, 0.45);
       }
+
       .cloud--one {
-        width: 220px; height: 56px;
-        top: 18%; left: -12%;
+        width: 220px;
+        height: 56px;
+        top: 18%;
+        left: -12%;
       }
+
       .cloud--one::before {
-        width: 95px; height: 66px;
-        left: 26px; top: -30px;
+        width: 95px;
+        height: 66px;
+        left: 26px;
+        top: -30px;
       }
+
       .cloud--one::after {
-        width: 90px; height: 54px;
-        right: 28px; top: -20px;
+        width: 90px;
+        height: 54px;
+        right: 28px;
+        top: -20px;
       }
+
       .cloud--two {
-        width: 180px; height: 48px;
-        top: 30%; left: -20%;
+        width: 180px;
+        height: 48px;
+        top: 30%;
+        left: -20%;
         animation-duration: 32s;
         animation-delay: -8s;
       }
+
       .cloud--two::before {
-        width: 80px; height: 54px;
-        left: 20px; top: -24px;
+        width: 80px;
+        height: 54px;
+        left: 20px;
+        top: -24px;
       }
+
       .cloud--two::after {
-        width: 82px; height: 42px;
-        right: 20px; top: -16px;
+        width: 82px;
+        height: 42px;
+        right: 20px;
+        top: -16px;
       }
+
       .cloud--three {
-        width: 260px; height: 64px;
-        top: 10%; left: -24%;
+        width: 260px;
+        height: 64px;
+        top: 10%;
+        left: -24%;
         animation-duration: 40s;
         animation-delay: -15s;
       }
+
       .cloud--three::before {
-        width: 112px; height: 72px;
-        left: 30px; top: -36px;
+        width: 112px;
+        height: 72px;
+        left: 30px;
+        top: -36px;
       }
+
       .cloud--three::after {
-        width: 112px; height: 56px;
-        right: 32px; top: -24px;
+        width: 112px;
+        height: 56px;
+        right: 32px;
+        top: -24px;
       }
+
+      .layout {
+        position: relative;
+        z-index: 1;
+        width: min(1120px, 100%);
+        margin: 0 auto;
+        min-height: calc(100dvh - 64px);
+        display: grid;
+        grid-template-columns: minmax(320px, 480px) minmax(280px, 1fr);
+        gap: 32px;
+        align-items: center;
+      }
+
+      .panel {
+        display: grid;
+        gap: 20px;
+      }
+
+      .hero {
+        display: grid;
+        gap: 10px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        width: fit-content;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.48);
+        color: var(--accent-dark);
+        font-size: 0.92rem;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+      }
+
+      .hero h1 {
+        font-size: clamp(2rem, 4vw, 3.4rem);
+        line-height: 1.02;
+        max-width: 10ch;
+      }
+
+      .hero p {
+        max-width: 42ch;
+        color: var(--text-soft);
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+
+      .lookup-card,
+      .result-card {
+        border: 1px solid var(--card-border);
+        border-radius: 28px;
+        background: var(--card-bg);
+        backdrop-filter: blur(16px);
+        box-shadow: var(--shadow);
+      }
+
+      .lookup-card {
+        padding: 24px;
+        display: grid;
+        gap: 18px;
+      }
+
+      .lookup-card h2 {
+        font-size: 1.2rem;
+      }
+
+      .lookup-card p {
+        color: var(--text-soft);
+        line-height: 1.55;
+      }
+
+      .lookup-form {
+        display: grid;
+        gap: 14px;
+      }
+
+      .lookup-form label {
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+
+      .input-row {
+        display: flex;
+        gap: 12px;
+        align-items: stretch;
+      }
+
+      .lookup-form input {
+        flex: 1;
+        min-width: 0;
+        padding: 15px 16px;
+        border: 1px solid rgba(15, 84, 161, 0.16);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.92);
+        color: var(--text-main);
+        font-size: 1rem;
+        outline: none;
+      }
+
+      .lookup-form input:focus {
+        border-color: rgba(16, 88, 173, 0.55);
+        box-shadow: 0 0 0 4px rgba(16, 88, 173, 0.12);
+      }
+
+      .lookup-form button {
+        border: 0;
+        border-radius: 16px;
+        padding: 0 22px;
+        min-height: 52px;
+        background: linear-gradient(180deg, var(--accent) 0%, var(--accent-dark) 100%);
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .lookup-form button:disabled {
+        cursor: wait;
+        opacity: 0.75;
+      }
+
+      .helper-text {
+        color: var(--text-soft);
+        font-size: 0.92rem;
+      }
+
+      .status {
+        display: none;
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: var(--status-bg);
+        color: var(--accent-dark);
+        line-height: 1.5;
+      }
+
+      .status[data-tone="error"] {
+        display: block;
+        background: rgba(177, 53, 69, 0.1);
+        color: #9c1e36;
+      }
+
+      .status[data-tone="info"] {
+        display: block;
+      }
+
+      .result-card {
+        display: none;
+        padding: 24px;
+        gap: 18px;
+      }
+
+      .result-card[data-visible="true"] {
+        display: grid;
+      }
+
+      .result-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: flex-start;
+      }
+
+      .result-header h3 {
+        font-size: 1.3rem;
+      }
+
+      .result-header p {
+        margin-top: 4px;
+        color: var(--text-soft);
+      }
+
+      .pill {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 34px;
+        padding: 0 12px;
+        border-radius: 999px;
+        background: rgba(16, 88, 173, 0.12);
+        color: var(--accent-dark);
+        font-size: 0.88rem;
+        font-weight: 700;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .info-item {
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.56);
+        border: 1px solid rgba(18, 56, 95, 0.08);
+      }
+
+      .info-item span {
+        display: block;
+      }
+
+      .info-item .label {
+        margin-bottom: 6px;
+        color: var(--text-soft);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+
+      .info-item .value {
+        font-size: 0.98rem;
+        line-height: 1.45;
+        word-break: break-word;
+      }
+
+      .tree-wrap {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
       .tree {
-        width: min(58vw, 440px);
+        width: min(54vw, 500px);
         height: auto;
         max-height: 86dvh;
         filter: drop-shadow(0 16px 30px rgba(5, 37, 72, 0.35));
         transform: translateY(3%);
       }
+
       @keyframes drift {
         0% { transform: translateX(0); }
         100% { transform: translateX(132vw); }
       }
-      @media (max-width: 700px) {
-        .tree { width: min(74vw, 350px); }
+
+      @media (max-width: 920px) {
+        .layout {
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+
+        .panel {
+          order: 2;
+        }
+
+        .tree-wrap {
+          order: 1;
+        }
+
+        .tree {
+          width: min(70vw, 360px);
+          max-height: 42dvh;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .scene {
+          padding: 20px 16px 32px;
+        }
+
+        .lookup-card,
+        .result-card {
+          border-radius: 22px;
+        }
+
+        .input-row,
+        .result-header,
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .input-row {
+          display: grid;
+        }
+
+        .lookup-form button {
+          width: 100%;
+        }
+
+        .info-grid {
+          gap: 12px;
+        }
       }
     </style>
   </head>
   <body>
-    <main class="scene" aria-label="Copac pe fundal de cer">
+    <main class="scene" aria-label="Copac pe fundal de cer cu verificare ANAF">
       <div class="cloud cloud--one"></div>
       <div class="cloud cloud--two"></div>
       <div class="cloud cloud--three"></div>
-      <img class="tree" src="20771654_x0w5_eydt_210607.svg" alt="Copac" />
+
+      <div class="layout">
+        <section class="panel" aria-label="Verificare companie dupa CUI">
+          <header class="hero">
+            <span class="eyebrow">Verificare rapida ANAF</span>
+            <h1>Date firma din ziua curenta</h1>
+            <p>
+              Introdu un CUI si afiseaza instant cateva informatii utile despre
+              companie, folosind registrul ANAF pentru data de astazi.
+            </p>
+          </header>
+
+          <section class="lookup-card">
+            <div>
+              <h2>Cauta dupa CUI</h2>
+              <p>
+                Sunt afisate doar datele esentiale: denumire, telefon, adresa,
+                stare, cod CAEN si statut RO e-Factura.
+              </p>
+            </div>
+
+            <form class="lookup-form" id="lookup-form" novalidate>
+              <label for="cui-input">Cod unic de identificare</label>
+
+              <div class="input-row">
+                <input
+                  id="cui-input"
+                  name="cui"
+                  type="text"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  placeholder="Exemplu: 12345678"
+                  aria-describedby="helper-text status-box"
+                />
+                <button type="submit" id="lookup-button">Cauta</button>
+              </div>
+
+              <p class="helper-text" id="helper-text">
+                Este trimis un singur CUI per cerere, folosind data curenta.
+              </p>
+
+              <div class="status" id="status-box" aria-live="polite"></div>
+            </form>
+          </section>
+
+          <section class="result-card" id="result-card" aria-live="polite">
+            <div class="result-header">
+              <div>
+                <h3 id="company-name">Compania apare aici</h3>
+                <p id="company-meta">Datele ANAF pentru interogarea curenta.</p>
+              </div>
+              <span class="pill" id="e-factura-pill">RO e-Factura</span>
+            </div>
+
+            <div class="info-grid">
+              <article class="info-item">
+                <span class="label">Telefon</span>
+                <span class="value" id="company-phone">-</span>
+              </article>
+              <article class="info-item">
+                <span class="label">Adresa</span>
+                <span class="value" id="company-address">-</span>
+              </article>
+              <article class="info-item">
+                <span class="label">Judet</span>
+                <span class="value" id="company-county">-</span>
+              </article>
+              <article class="info-item">
+                <span class="label">Stare inregistrare</span>
+                <span class="value" id="company-status">-</span>
+              </article>
+              <article class="info-item">
+                <span class="label">Cod CAEN</span>
+                <span class="value" id="company-caen">-</span>
+              </article>
+              <article class="info-item">
+                <span class="label">Data interogarii</span>
+                <span class="value" id="company-date">-</span>
+              </article>
+            </div>
+          </section>
+        </section>
+
+        <div class="tree-wrap">
+          <img class="tree" src="20771654_x0w5_eydt_210607.svg" alt="Copac" />
+        </div>
+      </div>
     </main>
+
+    <script>
+      const apiUrl = document.documentElement.dataset.anafApiUrl || "";
+      const form = document.getElementById("lookup-form");
+      const input = document.getElementById("cui-input");
+      const button = document.getElementById("lookup-button");
+      const statusBox = document.getElementById("status-box");
+      const resultCard = document.getElementById("result-card");
+
+      const resultFields = {
+        companyName: document.getElementById("company-name"),
+        companyMeta: document.getElementById("company-meta"),
+        phone: document.getElementById("company-phone"),
+        address: document.getElementById("company-address"),
+        county: document.getElementById("company-county"),
+        status: document.getElementById("company-status"),
+        caen: document.getElementById("company-caen"),
+        date: document.getElementById("company-date"),
+        eFactura: document.getElementById("e-factura-pill")
+      };
+
+      function setStatus(message, tone) {
+        statusBox.textContent = message || "";
+        statusBox.dataset.tone = tone || "";
+      }
+
+      function clearStatus() {
+        statusBox.textContent = "";
+        statusBox.dataset.tone = "";
+      }
+
+      function setLoading(isLoading) {
+        button.disabled = isLoading;
+        button.textContent = isLoading ? "Se cauta..." : "Cauta";
+      }
+
+      function hideResult() {
+        resultCard.dataset.visible = "false";
+      }
+
+      function showResult(data) {
+        resultFields.companyName.textContent = data.companyName || "Companie negasita";
+        resultFields.companyMeta.textContent = "CUI " + data.cui + " | Actualizat pentru " + (data.queriedAt || "-");
+        resultFields.phone.textContent = data.phone || "Nu este disponibil";
+        resultFields.address.textContent = data.address || "Nu este disponibila";
+        resultFields.county.textContent = data.county || "Nu este disponibil";
+        resultFields.status.textContent = data.registrationStatus || "Nu este disponibila";
+        resultFields.caen.textContent = data.caen || "Nu este disponibil";
+        resultFields.date.textContent = data.queriedAt || "-";
+        resultFields.eFactura.textContent = data.eFactura ? "RO e-Factura activ" : "RO e-Factura inactiv";
+        resultCard.dataset.visible = "true";
+      }
+
+      async function fetchCompanyData(cui) {
+        if (!apiUrl || apiUrl.includes("your-vercel-project")) {
+          throw new Error("Configureaza mai intai URL-ul functiei Vercel in atributul data-anaf-api-url din tagul html.");
+        }
+
+        const response = await fetch(apiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ cui })
+        });
+
+        const payload = await response.json().catch(function () {
+          return {};
+        });
+
+        if (!response.ok) {
+          throw new Error(payload.error || "Nu am putut obtine datele ANAF momentan.");
+        }
+
+        return payload;
+      }
+
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const cui = input.value.replace(/\D/g, "");
+        input.value = cui;
+        hideResult();
+
+        if (!cui) {
+          setStatus("Introdu un CUI valid format doar din cifre.", "error");
+          input.focus();
+          return;
+        }
+
+        clearStatus();
+        setStatus("Se interogheaza ANAF pentru data curenta...", "info");
+        setLoading(true);
+
+        try {
+          const data = await fetchCompanyData(cui);
+
+          if (!data.found) {
+            setStatus("Nu a fost gasita nicio companie pentru acest CUI.", "error");
+            return;
+          }
+
+          showResult(data);
+          clearStatus();
+        } catch (error) {
+          setStatus(error.message || "A aparut o eroare neasteptata.", "error");
+        } finally {
+          setLoading(false);
+        }
+      });
+    </script>
   </body>
 </html>
